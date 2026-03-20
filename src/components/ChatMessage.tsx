@@ -1,13 +1,31 @@
 import { motion } from "framer-motion";
-import { Bot, User } from "lucide-react";
+import { Bot, User, Volume2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import { useState } from "react";
 
 interface ChatMessageProps {
   role: "user" | "assistant";
   content: string;
+  language?: string;
 }
 
-const ChatMessage = ({ role, content }: ChatMessageProps) => {
+const ChatMessage = ({ role, content, language = "en" }: ChatMessageProps) => {
   const isUser = role === "user";
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const handleSpeak = () => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(content);
+    utterance.lang = language === "ta" ? "ta-IN" : "en-IN";
+    utterance.rate = 0.9;
+    utterance.onend = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
 
   return (
     <motion.div
@@ -34,7 +52,24 @@ const ChatMessage = ({ role, content }: ChatMessageProps) => {
             : "glass-card text-foreground rounded-tl-sm"
         }`}
       >
-        {content}
+        {isUser ? (
+          content
+        ) : (
+          <div className="prose prose-sm prose-green dark:prose-invert max-w-none [&_p]:mb-2 [&_ul]:mb-2 [&_ol]:mb-2 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_strong]:text-primary">
+            <ReactMarkdown>{content}</ReactMarkdown>
+          </div>
+        )}
+        {!isUser && content.length > 10 && (
+          <button
+            onClick={handleSpeak}
+            className={`mt-2 flex items-center gap-1 text-xs transition-colors ${
+              isSpeaking ? "text-primary" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Volume2 className="h-3.5 w-3.5" />
+            {isSpeaking ? "Stop" : "Listen"}
+          </button>
+        )}
       </div>
     </motion.div>
   );
