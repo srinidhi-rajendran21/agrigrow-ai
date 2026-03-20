@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import HomePage from "@/pages/HomePage";
 import ChatPage from "@/pages/ChatPage";
 import DiseasePage from "@/pages/DiseasePage";
+import MarketPricesPage from "@/pages/MarketPricesPage";
 import DashboardPage from "@/pages/DashboardPage";
 import NotFound from "@/pages/NotFound";
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/" element={<HomePage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/detect" element={<DiseasePage />} />
+          <Route path="/prices" element={<MarketPricesPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

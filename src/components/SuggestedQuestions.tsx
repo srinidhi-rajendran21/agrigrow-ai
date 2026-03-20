@@ -13,11 +13,13 @@ const SuggestedQuestions = ({ questions, onSelect }: SuggestedQuestionsProps) =>
       {questions.map((q, i) => (
         <motion.button
           key={q}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: i * 0.1 }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.08, type: "spring", stiffness: 150 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => onSelect(q)}
-          className="rounded-full border border-border bg-card/80 px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-accent hover:border-primary/30"
+          className="rounded-2xl border border-border bg-card/90 px-3.5 py-2 text-xs font-medium text-foreground transition-colors hover:bg-accent hover:border-primary/30 hover:text-primary"
         >
           {q}
         </motion.button>

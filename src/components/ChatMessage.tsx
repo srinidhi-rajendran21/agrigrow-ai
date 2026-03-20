@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Bot, User, Volume2 } from "lucide-react";
+import { Bot, User, Volume2, VolumeX } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useState } from "react";
 
@@ -29,13 +29,13 @@ const ChatMessage = ({ role, content, language = "en" }: ChatMessageProps) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
+      transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
+      className={`flex gap-2.5 ${isUser ? "flex-row-reverse" : "flex-row"}`}
     >
       <div
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${
           isUser ? "gradient-hero" : "bg-accent"
         }`}
       >
@@ -46,27 +46,27 @@ const ChatMessage = ({ role, content, language = "en" }: ChatMessageProps) => {
         )}
       </div>
       <div
-        className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+        className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
           isUser
-            ? "gradient-hero text-primary-foreground rounded-tr-sm"
-            : "glass-card text-foreground rounded-tl-sm"
+            ? "gradient-hero text-primary-foreground rounded-tr-md"
+            : "glass-card text-foreground rounded-tl-md"
         }`}
       >
         {isUser ? (
           content
         ) : (
-          <div className="prose prose-sm prose-green dark:prose-invert max-w-none [&_p]:mb-2 [&_ul]:mb-2 [&_ol]:mb-2 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_strong]:text-primary">
+          <div className="prose prose-sm prose-green dark:prose-invert max-w-none [&_p]:mb-2 [&_ul]:mb-2 [&_ol]:mb-2 [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm [&_strong]:text-primary [&_li]:text-foreground">
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         )}
         {!isUser && content.length > 10 && (
           <button
             onClick={handleSpeak}
-            className={`mt-2 flex items-center gap-1 text-xs transition-colors ${
+            className={`mt-2 flex items-center gap-1 text-[11px] font-medium transition-colors ${
               isSpeaking ? "text-primary" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Volume2 className="h-3.5 w-3.5" />
+            {isSpeaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
             {isSpeaking ? "Stop" : "Listen"}
           </button>
         )}
