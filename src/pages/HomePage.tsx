@@ -133,7 +133,7 @@ const HomePage = () => {
             icon={Landmark}
             title="Govt Schemes"
             description="Subsidies & program benefits"
-            to="/chat?topic=schemes"
+            to="/schemes"
             gradient="gradient-sky"
             emoji="🏛️"
             delay={0.25}
