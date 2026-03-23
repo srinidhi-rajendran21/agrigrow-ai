@@ -36,9 +36,9 @@ const HomePage = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-heading text-3xl font-black text-primary-foreground md:text-5xl leading-tight"
           >
-            Your AI Farming
+            AgriGrow AI
             <br />
-            Assistant
+            Farm Assistant
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
