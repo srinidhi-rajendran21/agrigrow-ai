@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Leaf, MessageCircle, Landmark, Sprout, TrendingUp, ShieldCheck } from "lucide-react";
+import { Leaf, MessageCircle, Landmark, Sprout, TrendingUp, ShieldCheck, Wifi } from "lucide-react";
 import ActionCard from "@/components/ActionCard";
 
 const stats = [
