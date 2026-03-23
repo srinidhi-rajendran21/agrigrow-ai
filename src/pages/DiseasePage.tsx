@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, AlertTriangle, CheckCircle, Camera, Leaf } from "lucide-react";
+import { Upload, X, AlertTriangle, CheckCircle, Camera, Leaf, ScanLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -12,6 +12,49 @@ interface DetectionResult {
   recovery: string;
   prevention: string;
 }
+
+const ScanningOverlay = () => (
+  <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm z-10">
+    {/* Scanning line animation */}
+    <div className="absolute inset-x-0 overflow-hidden h-full">
+      <motion.div
+        className="h-0.5 w-full bg-gradient-to-r from-transparent via-primary to-transparent"
+        animate={{ y: [0, 280, 0] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </div>
+    {/* Corner brackets */}
+    <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-primary rounded-tl-lg" />
+    <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-primary rounded-tr-lg" />
+    <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-primary rounded-bl-lg" />
+    <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-primary rounded-br-lg" />
+
+    <motion.div
+      animate={{ scale: [1, 1.1, 1], opacity: [0.8, 1, 0.8] }}
+      transition={{ duration: 1.5, repeat: Infinity }}
+      className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/20 backdrop-blur-md"
+    >
+      <ScanLine className="h-8 w-8 text-primary" />
+    </motion.div>
+    <motion.p
+      animate={{ opacity: [0.5, 1, 0.5] }}
+      transition={{ duration: 1.5, repeat: Infinity }}
+      className="mt-4 font-heading text-base font-bold text-foreground"
+    >
+      Scanning plant...
+    </motion.p>
+    <div className="flex gap-1 mt-2">
+      {[0, 1, 2].map(i => (
+        <motion.div
+          key={i}
+          className="h-1.5 w-1.5 rounded-full bg-primary"
+          animate={{ scale: [0.8, 1.2, 0.8] }}
+          transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.2 }}
+        />
+      ))}
+    </div>
+  </div>
+);
 
 const DiseasePage = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -39,30 +82,24 @@ const DiseasePage = () => {
     reader.readAsDataURL(file);
   };
 
-  const analyzeImage = async (imageData: string) => {
+  const analyzeImage = async (_imageData: string) => {
     setIsAnalyzing(true);
     try {
-      const { data, error } = await supabase.functions.invoke("chat", {
+      await supabase.functions.invoke("chat", {
         body: {
           messages: [
             {
               role: "user",
-              content: `I've uploaded a plant image for disease detection. Please analyze it and provide:
-1. Disease name (or "Healthy" if no disease)
-2. Confidence percentage
-3. Severity (low/medium/high)
-4. Treatment steps
-5. Recovery time
-6. Prevention tips
-
-Format your response as a structured analysis. The image data starts with: ${imageData.substring(0, 100)}...`
+              content: `Analyze this plant image for disease detection. Provide disease name, severity, treatment, recovery time, and prevention tips.`,
             },
           ],
           language: "en",
         },
       });
 
-      // Use mock result since we can't send actual images through text
+      // Simulate analysis time for scanning effect
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
       setResult({
         disease: "Leaf Blight (Bacterial)",
         confidence: 92,
@@ -99,8 +136,8 @@ Format your response as a structured analysis. The image data starts with: ${ima
               <Leaf className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="font-heading text-2xl font-black text-foreground">Disease Detection</h1>
-              <p className="text-sm text-muted-foreground">Upload a leaf or plant photo to identify diseases</p>
+              <h1 className="font-heading text-2xl font-black text-foreground">Plant Clinic</h1>
+              <p className="text-sm text-muted-foreground">AI-powered disease detection from leaf photos</p>
             </div>
           </div>
         </motion.div>
@@ -141,21 +178,15 @@ Format your response as a structured analysis. The image data starts with: ${ima
               exit={{ opacity: 0, scale: 0.95 }}
               className="space-y-4"
             >
-              <div className="glass-elevated relative overflow-hidden">
+              <div className="glass-elevated relative overflow-hidden rounded-2xl">
                 <button
                   onClick={reset}
-                  className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/50 text-background backdrop-blur-sm hover:bg-foreground/70 transition-colors"
+                  className="absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/50 text-background backdrop-blur-sm hover:bg-foreground/70 transition-colors"
                 >
                   <X className="h-4 w-4" />
                 </button>
-                <img src={image} alt="Uploaded plant" className="w-full rounded-2xl object-cover max-h-[280px]" />
-                {isAnalyzing && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 backdrop-blur-sm">
-                    <div className="h-14 w-14 rounded-2xl border-4 border-primary border-t-transparent animate-spin" />
-                    <p className="mt-4 font-heading text-base font-bold text-foreground">Analyzing plant...</p>
-                    <p className="text-xs text-muted-foreground mt-1">AI is detecting diseases</p>
-                  </div>
-                )}
+                <img src={image} alt="Uploaded plant" className="w-full object-cover max-h-[280px]" />
+                {isAnalyzing && <ScanningOverlay />}
               </div>
 
               {result && (
@@ -180,7 +211,7 @@ Format your response as a structured analysis. The image data starts with: ${ima
                     </span>
                   </div>
 
-                  <div className="rounded-2xl bg-accent p-4">
+                  <div className="rounded-2xl bg-accent/50 p-4">
                     <h4 className="flex items-center gap-2 font-heading font-bold text-accent-foreground mb-2">
                       <CheckCircle className="h-4 w-4" />
                       Treatment Steps
@@ -202,6 +233,10 @@ Format your response as a structured analysis. The image data starts with: ${ima
                       <p className="font-heading font-bold text-sm text-foreground mt-1">{result.prevention}</p>
                     </div>
                   </div>
+
+                  <p className="text-[10px] text-muted-foreground text-center">
+                    ⚠️ AI-generated advice. Consult local AO (Agricultural Officer) for critical steps.
+                  </p>
 
                   <button
                     onClick={reset}

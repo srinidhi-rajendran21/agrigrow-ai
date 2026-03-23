@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUp, Camera, Mic, MicOff, Loader2 } from "lucide-react";
 import ChatMessage from "@/components/ChatMessage";
 import TypingIndicator from "@/components/TypingIndicator";
@@ -12,7 +12,7 @@ const INITIAL_MESSAGES: ChatMsg[] = [
   {
     role: "assistant",
     content:
-      "Vanakkam! 🌾 I'm your **Farmer AI Assistant**. I can help you with:\n\n- 🌱 **Crop suggestions** based on your soil & season\n- 🦠 **Disease detection** from plant photos\n- 💰 **Government schemes** & subsidies\n- 🌦️ **Weather-based** farming advice\n- 📈 **Market prices** & selling tips\n\nHow can I help you today?",
+      "Vanakkam! 🌾 Naan unga **AgriGrow AI Assistant**. Enna help venum?\n\n- 🌱 **Crop suggestions** — un soil & season ku best crop\n- 🦠 **Plant Clinic** — disease detect panrom\n- 💰 **Govt Schemes** — subsidies & programs\n- 🌦️ **Weather advice** — irrigation & fertilizer timing\n- 📈 **Market prices** — best selling strategy\n- 🏪 **Direct selling** — middlemen illama sell pannu\n\nKelu bro, naan ready! 💪",
   },
 ];
 
@@ -20,14 +20,14 @@ const SUGGESTED_EN = [
   "Best crop for red soil this season?",
   "Tell me about PM-KISAN scheme",
   "How to prevent leaf curl disease?",
-  "Weather tips for paddy farming",
+  "What's the tomato price in Coimbatore?",
 ];
 
 const SUGGESTED_TA = [
   "சிவப்பு மண்ணில் என்ன பயிர் நடலாம்?",
   "PM-KISAN திட்டம் பற்றி சொல்லுங்கள்",
   "இலை சுருள் நோயை எப்படி தடுப்பது?",
-  "நெல் சாகுபடிக்கான வானிலை குறிப்புகள்",
+  "கோயம்புத்தூரில் தக்காளி விலை என்ன?",
 ];
 
 const ChatPage = () => {
@@ -133,10 +133,10 @@ const ChatPage = () => {
             <span className="text-xl">🌾</span>
           </div>
           <div>
-            <h2 className="font-heading text-base font-bold text-foreground">Farm Assistant</h2>
+            <h2 className="font-heading text-base font-bold text-foreground">AgriGrow AI</h2>
             <div className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-              <p className="text-[11px] text-muted-foreground">AI-powered · Always ready</p>
+              <p className="text-[11px] text-muted-foreground">Thanglish · Always ready</p>
             </div>
           </div>
         </div>
@@ -157,23 +157,25 @@ const ChatPage = () => {
         )}
 
         <p className="text-center text-[10px] text-muted-foreground/50 pt-2">
-          ⚠️ AI-based guidance. Consult agricultural experts for critical decisions.
+          ⚠️ AI-generated advice. Consult local AO (Agricultural Officer) for critical steps.
         </p>
       </div>
 
       {/* Input */}
       <div className="shrink-0 border-t border-border bg-card/95 backdrop-blur-xl px-3 md:px-4 py-3">
         <div className="mx-auto flex max-w-3xl items-center gap-2">
-          <button
+          <motion.button
             onClick={handleVoiceInput}
+            animate={isListening ? { scale: [1, 1.15, 1] } : {}}
+            transition={isListening ? { duration: 1, repeat: Infinity } : {}}
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all duration-200 ${
               isListening
-                ? "gradient-hero text-primary-foreground scale-110 glow-primary"
+                ? "gradient-hero text-primary-foreground glow-primary"
                 : "bg-accent text-accent-foreground hover:bg-accent/80"
             }`}
           >
             {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-          </button>
+          </motion.button>
           <div className="relative flex-1">
             <input
               type="text"
